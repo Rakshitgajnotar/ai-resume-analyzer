@@ -1,0 +1,16 @@
+Senior React/Node.js Developer
+
+Requirements:
+- 5+ years of experience with React and Node.js
+- Strong understanding of RESTful APIs and Express.js
+- Experience with MongoDB or other NoSQL databases
+- Familiarity with async background processing (e.g., BullMQ, Redis, RabbitMQ)
+- Ability to write clean, maintainable, and well-tested code
+- Experience with AI integrations (OpenAI, Gemini, Anthropic) is a huge plus
+- Strong communication skills and ability to work in an agile team
+
+Responsibilities:
+- Build and maintain highly scalable web applicationmake  s
+- Integrate third-party APIs and services
+- Optimize applications for maximum speed and scalability
+- Collaborate with designers and product managers to define new features

@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: resume-screener-api
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node src/index.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  - type: worker
+    name: resume-screener-worker
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node worker.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromService:
+          type: web
+          name: resume-screener-api
+          envVarKey: MONGODB_URI
+      - key: REDIS_URL
+        fromService:
+          type: web
+          name: resume-screener-api
+          envVarKey: REDIS_URL
+      - key: GEMINI_API_KEY
+        fromService:
+          type: web
+          name: resume-screener-api
+          envVarKey: GEMINI_API_KEY
