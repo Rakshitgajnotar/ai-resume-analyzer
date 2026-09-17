@@ -1,21 +1,43 @@
 const Redis = require('ioredis');
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-  tls: process.env.REDIS_URL?.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
-  retryStrategy(times) {
-    return Math.min(times * 50, 2000);
-  },
-});
+let redis;
 
-redis.on('error', (err) => {
-  if (err.code === 'ECONNRESET' || err.message?.includes('ECONNRESET')) return;
-  console.error('Redis connection error:', err.message);
-});
+if (process.env.REDIS_URL) {
+  redis = new Redis(process.env.REDIS_URL, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    tls: process.env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
+    retryStrategy(times) {
+      return Math.min(times * 50, 2000);
+    },
+  });
 
-redis.on('connect', () => {
-  console.log('Redis client connected for caching');
-});
+  redis.on('error', (err) => {
+    if (err.code === 'ECONNRESET' || err.message?.includes('ECONNRESET')) return;
+    console.error('Redis connection error:', err.message);
+  });
+
+  redis.on('connect', () => {
+    console.log('Redis client connected for caching');
+  });
+} else {
+  console.log('[Redis] REDIS_URL not configured. Operating with in-memory caching fallback.');
+  const memoryCache = new Map();
+  redis = {
+    async get(key) {
+      return memoryCache.get(key) || null;
+    },
+    async set(key, value) {
+      memoryCache.set(key, value);
+      return 'OK';
+    },
+    async del(key) {
+      memoryCache.delete(key);
+      return 1;
+    },
+    on() {},
+  };
+}
 
 module.exports = redis;
+

@@ -10,19 +10,22 @@ const IORedis = require('ioredis');
 const { apiLimiter, checkQuota } = require('../middleware/rateLimit');
 const { analyzeResume, chatWithResume, optimizeBulletPoint } = require('../services/ai.service');
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-  keepAlive: 10000,
-  retryStrategy(times) {
-    return Math.min(times * 50, 2000);
-  }
-});
-connection.on('error', (err) => {
-  if (err.code === 'ECONNRESET' || err.message?.includes('ECONNRESET')) return;
-  console.error('Redis connection error:', err.message);
-});
-const queue = new Queue('resume-analysis', { connection });
+let queue = null;
+if (process.env.REDIS_URL) {
+  const connection = new IORedis(process.env.REDIS_URL, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    keepAlive: 10000,
+    retryStrategy(times) {
+      return Math.min(times * 50, 2000);
+    }
+  });
+  connection.on('error', (err) => {
+    if (err.code === 'ECONNRESET' || err.message?.includes('ECONNRESET')) return;
+    console.error('Redis connection error:', err.message);
+  });
+  queue = new Queue('resume-analysis', { connection });
+}
 
 // Background processor helper to guarantee analyses finish in 1s even if Redis worker process is separate
 async function processAnalysisInBackground(analysisId, resumeText, jobDescription) {
