@@ -103,7 +103,7 @@ function generateFallbackAnalysis(resumeText, jobDescription) {
 async function analyzeResume(resumeText, jobDescription) {
   const userPrompt = `TARGET JOB DESCRIPTION / ROLE:\n"""\n${jobDescription}\n"""\n\nCANDIDATE RESUME TEXT:\n"""\n${resumeText}\n"""`;
 
-  const modelsToTry = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
 
   for (const modelName of modelsToTry) {
     try {
@@ -169,7 +169,7 @@ CONVERSATION RULES:
 
   const prompt = `${historyPrompt}\nUSER QUESTION:\n${userMessage}\n\nProvide a helpful, precise answer as ProfileIQ AI:`;
 
-  const modelsToTry = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
 
   for (const modelName of modelsToTry) {
     try {
@@ -365,7 +365,7 @@ Generate 3 distinct high-impact ATS bullet point rewrites responding in JSON for
   ]
 }`;
 
-  const modelsToTry = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
 
   for (const modelName of modelsToTry) {
     try {

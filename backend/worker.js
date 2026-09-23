@@ -5,6 +5,14 @@ const IORedis = require('ioredis');
 const Analysis = require('./src/models/Analysis');
 const { analyzeResume } = require('./src/services/ai.service');
 
+// Check if Redis is configured
+if (!process.env.REDIS_URL) {
+  console.log('[Worker] REDIS_URL is not configured in .env.');
+  console.log('[Worker] You do NOT need to run worker.js! The backend server (npm run dev) automatically processes analyses in-process.');
+  console.log('[Worker] If you wish to use an external BullMQ worker, configure REDIS_URL in backend/.env.');
+  process.exit(0);
+}
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/resume')
   .then(() => console.log('Worker connected to MongoDB'))
@@ -13,10 +21,11 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/resume')
     process.exit(1);
   });
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
+const connection = new IORedis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
   keepAlive: 10000,
+  tls: process.env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
   retryStrategy(times) {
     return Math.min(times * 50, 2000);
   }
