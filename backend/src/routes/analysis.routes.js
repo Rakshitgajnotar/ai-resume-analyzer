@@ -16,6 +16,7 @@ if (process.env.REDIS_URL) {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
     keepAlive: 10000,
+    tls: process.env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
     retryStrategy(times) {
       return Math.min(times * 50, 2000);
     }
